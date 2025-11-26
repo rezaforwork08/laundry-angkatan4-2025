@@ -118,7 +118,8 @@ function changeQty(id, x) {
 }
 function updateTotal() {
   const subtotal = cart.reduce((sum, item) => sum + item.product_price * item.quantity, 0);
-  const tax = subtotal * 0.1;
+  // percent / 100 = 0.1
+  const tax = subtotal * 0.5;
   const total = tax + subtotal;
 
   document.getElementById("subtotal").textContent = `Rp. ${subtotal.toLocaleString()}`;

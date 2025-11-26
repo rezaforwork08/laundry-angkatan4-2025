@@ -36,7 +36,7 @@ if (isset($_POST['login'])) {
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Login | Point Of Sales 2025</title>
+    <title>Login | Laundry PPKD JP</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -82,7 +82,7 @@ if (isset($_POST['login'])) {
                             <div class="d-flex justify-content-center py-4">
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                                     <img src="assets/img/logo.png" alt="">
-                                    <span class="d-none d-lg-block">Point Of Sales 2025 </span>
+                                    <span class="d-none d-lg-block">Laundry PPKD JP 2025 </span>
                                 </a>
                             </div><!-- End Logo -->
 
