@@ -9,6 +9,11 @@ $queryCustomers  = mysqli_query($config, "SELECT * FROM customers");
 $rowCustomers    = mysqli_fetch_all($queryCustomers, MYSQLI_ASSOC);
 
 
+$querytax = mysqli_query($config, "SELECT * FROM taxs  WHERE is_active = 1
+ORDER BY id DESC LIMIT 1");
+$rowtax   = mysqli_fetch_assoc($querytax);
+
+
 // query Product
 // $queryProducts  = mysqli_query($config, "SELECT s.name, 
 // p.* FROM products p  LEFT JOIN categories c ON c.id = p.category_id");
@@ -35,9 +40,9 @@ if (isset($_GET['payment'])) {
 
     try {
         $insertOrder = mysqli_query($config, "INSERT INTO trans_orders (order_code, order_end_date,  
-        order_total, order_pay, order_change, order_tax, order_status)
+        order_total, order_pay, order_change, order_tax, order_status, customer_id)
          VALUES ('$orderCode', '$end_date', '$orderAmounth','$orderPay','$orderChange','$tax',
-           '$orderStatus' )");
+           '$orderStatus','$customer_id')");
 
         if (!$insertOrder) {
             throw new Exception("Insert failed to table orders", mysqli_error($config));
@@ -193,7 +198,8 @@ $order_code = "ORD-" . date('dmy') . str_pad($nextId, 4, "0", STR_PAD_LEFT);
                                 <div class="mb-3">
                                     <label for="" class="form-label">Weight / Qty</label>
                                     <input type="number" id="modal_qty"
-                                        class="form-control" placeholder="Weight / Qty">
+                                        class="form-control" placeholder="Weight / Qty"
+                                        step="0.1" min="0">
                                 </div>
 
 
@@ -230,14 +236,25 @@ $order_code = "ORD-" . date('dmy') . str_pad($nextId, 4, "0", STR_PAD_LEFT);
                             <input type="hidden" id="subtotal_value">
                         </div>
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Pajak (10%) :</span>
+                            <span>Pajak (<?php echo $rowtax['percent'] ?>%) :</span>
                             <span id="tax">Rp. 0.0</span>
                             <input type="hidden" id="tax_value">
+                            <input type="hidden" class="tax"
+                                value="<?php echo $rowtax['percent'] ?>">
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Total :</span>
                             <span id="total">Rp. 0.0</span>
                             <input type="hidden" id="total_value">
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Pay :</span>
+                            <input type="number" id="pay" class="form-control w-50"
+                                placeholder="Enter the payment amount" oninput="calculateChange()">
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Change :</span>
+                            <input type="number" id="change" class="form-control w-50" readonly>
                         </div>
                     </div>
                     <div class="row g-2">
@@ -264,15 +281,7 @@ $order_code = "ORD-" . date('dmy') . str_pad($nextId, 4, "0", STR_PAD_LEFT);
         crossorigin="anonymous"></script>
 
 
-    <script>
-        const products = <?php echo json_encode($fetchProducts); ?>
-    </script>
 
-    <script>
-
-
-
-    </script>
     <script src="../assets/js/reza.js"></script>
 
 

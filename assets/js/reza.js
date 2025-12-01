@@ -18,13 +18,13 @@ let cart = [];
 function addToCart() {
   const id = document.getElementById("modal_id").value;
   const name = document.getElementById("modal_name").value;
-  const price = parseInt(document.getElementById("modal_price").value); //10+10 = 1010 a = reza b=ibrahim nama = a+b
-  const qty = parseInt(document.getElementById("modal_qty").value);
+  const price = parseFloat(document.getElementById("modal_price").value); //10+10 = 1010 a = reza b=ibrahim nama = a+b
+  const qty = parseFloat(document.getElementById("modal_qty").value);
 
   const existing = cart.find((item) => item.id == id);
 
   if (existing) {
-    existing.quantity += qty;
+    existing.qty += qty;
   } else {
     cart.push({
       id,
@@ -33,6 +33,7 @@ function addToCart() {
       qty,
     });
   }
+
   renderCart();
 }
 
@@ -49,6 +50,7 @@ function renderCart() {
                     </div>
                 </div>`;
     updateTotal();
+
     // return;
   }
 
@@ -61,9 +63,7 @@ function renderCart() {
                     <small>${item.price}</small>
                 </div>
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-secondary me-2" onclick="changeQty(${item.id}, -1)">-</button>
                     <span>${item.qty}</span>
-                    <button class="btn btn-outline-secondary ms-3" onclick="changeQty(${item.id}, 1)">+</button>
                     <button class="btn btn-sm btn-danger ms-3" onclick="removeItem(${item.id})">
                         <i class="bi bi-trash"></i>
                     </button>
@@ -71,6 +71,7 @@ function renderCart() {
     cartContainer.appendChild(div);
   });
   updateTotal();
+  calculateChange();
 }
 //hapus item dari cart
 function removeItem(id) {
@@ -91,10 +92,14 @@ function changeQty(id, x) {
   }
   renderCart();
 }
+
 function updateTotal() {
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * parseFloat(item.qty), 0);
+  // const subtotal = price * qty;
   // percent / 100 = 0.1
-  const tax = subtotal * 0.5;
+  const taxValue = document.querySelector(".tax").value;
+  let tax = taxValue / 100;
+  tax = subtotal * tax;
   const total = tax + subtotal;
 
   document.getElementById("subtotal").textContent = `Rp. ${subtotal.toLocaleString()}`;
@@ -104,11 +109,6 @@ function updateTotal() {
   document.getElementById("subtotal_value").value = subtotal;
   document.getElementById("tax_value").value = tax;
   document.getElementById("total_value").value = total;
-  // 10.000.00
-  // 10000
-  // console.log(subtotal);
-  // console.log(tax);
-  // console.log(total);
 }
 document.getElementById("clearCart").addEventListener("click", function () {
   cart = [];
@@ -124,8 +124,9 @@ async function processPayment() {
   const subtotal = document.querySelector("#subtotal_value").value.trim();
   const tax = document.querySelector("#tax_value").value.trim();
   const grandTotal = document.querySelector("#total_value").value.trim();
-  const customer_id = document.getElementById("customer_id").value;
+  const customer_id = parseInt(document.getElementById("customer_id").value);
   const end_date = document.getElementById("end_date").value;
+
   try {
     const res = await fetch("add-order.php?payment", {
       method: "POST",
@@ -135,7 +136,7 @@ async function processPayment() {
     const data = await res.json();
     if (data.status == "success") {
       alert("Transaction success");
-      window.location.href = "print.php";
+      window.location.href = "print.php?id=" + data.order_id;
     } else {
       alert("Transaction failed", data.message);
     }
@@ -143,6 +144,15 @@ async function processPayment() {
     alert("Upss transaction fail");
     console.log("error", error);
   }
+}
+
+function calculateChange() {
+  const total = document.getElementById("total_value").value;
+  const pay = parseFloat(document.getElementById("pay").value);
+
+  const change = pay - total;
+  if (change < 0) change = 0;
+  document.getElementById("change").value = change;
 }
 
 // useEffect(() => {

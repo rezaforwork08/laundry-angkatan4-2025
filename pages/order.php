@@ -7,7 +7,8 @@ $rows = mysqli_fetch_all($query, MYSQLI_ASSOC);
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
 
-    $delete = mysqli_query($koneksi, "DELETE FROM trans_orders WHERE id = $id");
+
+    $delete = mysqli_query($config, "DELETE FROM trans_orders WHERE id = $id");
     if ($delete) {
         header("location:?page=order");
     }
@@ -56,10 +57,10 @@ if (isset($_GET['delete'])) {
                                 <td><?php echo $v['order_change'] ?></td>
                                 <td><?php echo $v['order_status'] ?></td>
                                 <td>
-                                    <a href="?page=tambah-product&edit=<?php echo $v['id'] ?>" class="btn btn-success btn-sm">
-                                        <i class="bi bi-pencil"></i>
-                                        Edit</a>
-                                    <a href="?page=product&delete=<?php echo $v['id'] ?>" class="btn btn-warning btn-sm" onclick="return confirm('Ingin delete??')">
+                                    <a href="pos/print.php?id=<?php echo $v['id'] ?>" class="btn btn-success btn-sm">
+                                        <i class="bi bi-printer"></i>
+                                        Print</a>
+                                    <a href="?page=order&delete=<?php echo $v['id'] ?>" class="btn btn-warning btn-sm" onclick="return confirm('Ingin delete??')">
                                         <i class="bi bi-trash"></i>
                                         Delete</a>
                                 </td>
